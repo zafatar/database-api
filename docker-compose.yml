@@ -1,0 +1,35 @@
+version: '3.3'
+
+services:
+  database_pg:
+    container_name: database_pg
+    image: postgres:13.0
+    volumes:
+      - .db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASS}
+      POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+      - 55555:5432
+    networks:
+      - app_network
+    restart: always
+
+  database_api:
+    container_name: database_api
+    env_file:
+      - ./.env
+    # environment:
+    #  - POSTGRES_PATH=${POSTGRES_PRE_PATH}${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    ports:
+      - 5555:8080
+    depends_on:
+      - database_pg
+
+networks:
+    app_network:
+        driver: bridge
