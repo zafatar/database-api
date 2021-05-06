@@ -44,7 +44,7 @@ func main() {
 		os.Getenv("DATABASE_PASS"),
 		os.Getenv("DATABASE_NAME"),
 	)
-	fmt.Println(dsn)
+
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN: dsn,
 	}), &gorm.Config{})
@@ -57,6 +57,7 @@ func main() {
 	db.AutoMigrate(&Driver{})
 	db.AutoMigrate(&Car{})
 
+	// TODO: Control if the source are already exists.
 	for index := range drivers {
 		db.Create(&drivers[index])
 	}
@@ -75,6 +76,7 @@ func main() {
 	e.Logger.Fatal(e.Start(":8080"))
 }
 
+// TODO: Move this endpoings to a `views` folder.
 // e.GET("/healthcheck", GetHealthCheck)
 func GetHealthCheck(c echo.Context) error {
 	return c.String(http.StatusOK, "OK")
